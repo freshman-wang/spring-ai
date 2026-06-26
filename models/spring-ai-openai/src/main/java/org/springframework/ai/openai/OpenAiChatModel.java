@@ -622,6 +622,11 @@ public final class OpenAiChatModel implements ChatModel {
 						.message(ChatCompletionMessage.builder()
 							.content(chunkChoice.delta().content())
 							.refusal(chunkChoice.delta().refusal())
+							// Carry over provider-specific delta fields (e.g. reasoning_content
+							// from DeepSeek/DashScope/Qwen) so they are readable on the message,
+							// as in the non-streaming path. Without this, getReasoningContent(choice)
+							// always returns empty for streaming responses.
+							.putAllAdditionalProperties(chunkChoice.delta()._additionalProperties())
 							.build());
 
 					// Handle optional logprobs
